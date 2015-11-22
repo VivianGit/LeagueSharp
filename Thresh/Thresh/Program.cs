@@ -1,16 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+#region
+
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using Color = System.Drawing.Color;
 
-namespace 锤石 {
-	class Program {
+#endregion
 
+namespace 锤石
+{
+    class Program
+    {
 		public static Obj_AI_Hero Player = ObjectManager.Player;
 		public static Spell Q, W, E, R;
 		public static List<Vector3> MobList = new List<Vector3>();
@@ -18,11 +23,13 @@ namespace 锤石 {
 		public static Menu Config;
 		public static Orbwalking.Orbwalker Orbwalker;
 
-		static void Main(string[] args) {
+		static void Main(string[] args)
+        {
 			CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
 		}
 
-		private static void Game_OnGameLoad(EventArgs args) {
+		private static void Game_OnGameLoad(EventArgs args)
+        {
 			if (Player.ChampionName!= "Thresh")
 			{
 				return;
@@ -31,6 +38,10 @@ namespace 锤石 {
 			LoadSpell();
 			LoadMenu();
 			InitMobList();
+
+            Game.PrintChat("AS - Thresh Load!");
+
+            Notifications.AddNotification("Welcome To Thresh World!", 3000);
 
 			Game.OnUpdate += Game_OnUpdate;
 			Drawing.OnDraw += Drawing_OnDraw;
@@ -43,7 +54,8 @@ namespace 锤石 {
 			//Obj_AI_Base.OnBuffRemove += Obj_AI_Base_OnBuffRemove;
         }
 
-		private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args) {
+		private static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
 			#region
 			if (!W.IsReady() || !sender.IsEnemy || !sender.IsValidTarget(1500))
 				return;
@@ -65,21 +77,25 @@ namespace 锤石 {
 						continue;
 				}
 
-				if (dmg > 0)
-				{
-					if (dmg > value)
-						W.Cast(ally.Position);
-					else if (Player.Health - dmg < Player.CountEnemiesInRange(700) * Player.Level * 20)
-						W.Cast(ally.Position);
-					else if (ally.Health - dmg < ally.Level * 10)
-						W.Cast(ally.Position);
-				}
+                if(Config.Item("lowhpw").GetValue<bool>())
+                {
+                    if (dmg > 0)
+                    {
+                        if (dmg > value)
+                            W.Cast(ally.Position);
+                        else if (Player.Health - dmg < Player.CountEnemiesInRange(700) * Player.Level * 20)
+                            W.Cast(ally.Position);
+                        else if (ally.Health - dmg < ally.Level * 10)
+                            W.Cast(ally.Position);
+                    }
+                }
 			}
 			#endregion
 
 		}
 
-		private static void LoadSpell() {
+		private static void LoadSpell()
+        {
 			Q = new Spell(SpellSlot.Q, 1075);
 			W = new Spell(SpellSlot.W, 950);
 			E = new Spell(SpellSlot.E, 450);
@@ -89,21 +105,24 @@ namespace 锤石 {
 			E.SetSkillshot(0.25f, 100, float.MaxValue, false, SkillshotType.SkillshotLine);
 		}
 
-		private static void Obj_AI_Base_OnBuffRemove(Obj_AI_Base sender, Obj_AI_BaseBuffRemoveEventArgs args) {
-			if (sender.IsEnemy && args.Buff.Name == "threshqfakeknockup" && args.Buff.Caster.IsMe)
-			{
-				Qedtarget = null;
-			}
-		}
+        //private static void Obj_AI_Base_OnBuffRemove(Obj_AI_Base sender, Obj_AI_BaseBuffRemoveEventArgs args)
+        //{
+        //    if (sender.IsEnemy && args.Buff.Name == "threshqfakeknockup" && args.Buff.Caster.IsMe)
+        //    {
+        //        Qedtarget = null;
+        //    }
+        //}
 
-		private static void Obj_AI_Base_OnBuffAdd(Obj_AI_Base sender, Obj_AI_BaseBuffAddEventArgs args) {
-			if (sender.IsEnemy && args.Buff.Name == "threshqfakeknockup" && args.Buff.Caster.IsMe)
-			{
-				Qedtarget = sender;
-            }
-		}
+        //private static void Obj_AI_Base_OnBuffAdd(Obj_AI_Base sender, Obj_AI_BaseBuffAddEventArgs args)
+        //{
+        //    if (sender.IsEnemy && args.Buff.Name == "threshqfakeknockup" && args.Buff.Caster.IsMe)
+        //    {
+        //        Qedtarget = sender;
+        //    }
+        //}
 
-		private static void Spellbook_OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args) {
+        private static void Spellbook_OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
+        {
 			//Q在冲向敌人时不放E
 			if (sender.Owner.IsMe && args.Slot == SpellSlot.E && sender.Owner.IsDashing())
 			{
@@ -137,13 +156,11 @@ namespace 锤石 {
 				{
 					CastQ(target);
 				}
-
-                
 			}
-		
 		}
 
-		private static void InitMobList() {
+		private static void InitMobList()
+        {
 			MobList.Add(new Vector3 { X = 1684, Y = 55, Z = 8207 });
 			MobList.Add(new Vector3 { X = 8217, Y = 54, Z = 2534 });
 			MobList.Add(new Vector3 { X = 7917, Y = 54, Z = 2534 });
@@ -169,36 +186,40 @@ namespace 锤石 {
 			//MobList.Add(new Vector3 );
 		}
 
-		private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser) {
-			if (E.CanCast(gapcloser.Sender))
+		private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+			if (E.CanCast(gapcloser.Sender) && Config.Item("antie").GetValue<bool>())
 			{
 				E.Cast(gapcloser.Sender);
 			}
-			if (Q.CanCast(gapcloser.Sender) && Q.Instance.Name == "ThreshQ")
+			if (Q.CanCast(gapcloser.Sender) && Q.Instance.Name == "ThreshQ" && Config.Item("antiq").GetValue<bool>())
 			{
 				CastQ(gapcloser.Sender);
 			}
 		}
 
-		private static void Unit_OnDash(Obj_AI_Base sender, Dash.DashItem args) {
-			if (sender.IsEnemy && args.IsBlink && E.IsReady()&& Player.Distance(args.StartPos)<E.Range)
+		private static void Unit_OnDash(Obj_AI_Base sender, Dash.DashItem args)
+        {
+			if (sender.IsEnemy && args.IsBlink && E.IsReady()&& Player.Distance(args.StartPos)<E.Range && Config.Item("comboe").GetValue<bool>())
 			{
 				E.Cast(args.StartPos);
 			}
 		}
 
-		private static void Drawing_OnDraw(EventArgs args) {
-			if (Q.IsReady())
+		private static void Drawing_OnDraw(EventArgs args)
+        {
+			if (Q.IsReady() && Config.Item("drawq").GetValue<bool>())
 			{
 				Render.Circle.DrawCircle(Player.Position,Q.Range, Color.Cyan, 1);
 			}
-			if (E.IsReady())
+			if (E.IsReady() && Config.Item("drawe").GetValue<bool>())
 			{
 				Render.Circle.DrawCircle(Player.Position, E.Range, Color.Cyan, 1);
 			}
 		}
 
-		private static void Game_OnUpdate(EventArgs args) {
+		private static void Game_OnUpdate(EventArgs args)
+        {
 			if (Player.IsDead) return;
 
 			foreach (var unit in ObjectManager.Get<Obj_AI_Base>().Where(o => o.Distance(Player)<Q.Range+20 && !o.IsMe))
@@ -243,33 +264,65 @@ namespace 锤石 {
 			}
 		}
 
-		private static void AutoGab() {
-			var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-			if (Q.Instance.Name == "ThreshQ" && Q.CanCast(target)&& !E.IsInRange(target) && !Player.IsRecalling())
-			{
-				CastQ(target, HitChance.Collision);
-				CastQ(target, HitChance.Immobile);
-			}
-		}
+		//private static void AutoGab() 
+        //{
+		//	var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+		//	if (Q.Instance.Name == "ThreshQ" && Q.CanCast(target)&& !E.IsInRange(target) && !Player.IsRecalling())
+		//	{
+		//		CastQ(target, HitChance.Collision);
+		//		CastQ(target, HitChance.Immobile);
+		//	}
+		//}
 
-		private static void LoadMenu() {
+		private static void LoadMenu()
+        {
 			Config = new Menu("Thresh", "锤石As", true);
 			var OrbMenu = new Menu("Orbwalker", "走砍设置");
 			Orbwalker = new Orbwalking.Orbwalker(OrbMenu);
 			Config.AddSubMenu(OrbMenu);
-			Config.AddItem(new MenuItem("逃跑", "Flee").SetValue(new KeyBind('S', KeyBindType.Press)));
-			Config.AddItem(new MenuItem("大招人数","Box Count").SetValue(new Slider(2,1,5)));
+
+            Config.AddSubMenu(new Menu("Spell Setting", "SpellSetting"));
+
+            Config.SubMenu("SpellSetting").AddSubMenu(new Menu("------ Q Setting", "qsetting").SetFontStyle(FontStyle.Regular, SharpDX.Color.Red));
+            Config.SubMenu("SpellSetting").SubMenu("qsetting").AddItem(new MenuItem("autoqincombo", "Combo").SetValue(true));
+            Config.SubMenu("SpellSetting").SubMenu("qsetting").AddItem(new MenuItem("antiq", "AntiGapcloser").SetValue(true));
+
+
+            Config.SubMenu("SpellSetting").AddSubMenu(new Menu("------ W Setting" , "wsetting").SetFontStyle(FontStyle.Regular, SharpDX.Color.SeaGreen));
+            Config.SubMenu("SpellSetting").SubMenu("wsetting").AddItem(new MenuItem("GiveAllyWToAoE", "AOE").SetValue(true));
+            Config.SubMenu("SpellSetting").SubMenu("wsetting").AddItem(new MenuItem("GiveAllyWToFar", "Too Far").SetValue(true));
+            Config.SubMenu("SpellSetting").SubMenu("wsetting").AddItem(new MenuItem("lowhpw", "Low Hp").SetValue(true));
+
+            Config.SubMenu("SpellSetting").AddSubMenu(new Menu("------ E Setting" , "esetting").SetFontStyle(FontStyle.Regular, SharpDX.Color.SkyBlue));
+            Config.SubMenu("SpellSetting").SubMenu("esetting").AddItem(new MenuItem("comboe", "Smart Combo").SetValue(true));
+            Config.SubMenu("SpellSetting").SubMenu("esetting").AddItem(new MenuItem("lanecleare", "LaneClear").SetValue(true));
+            Config.SubMenu("SpellSetting").SubMenu("esetting").AddItem(new MenuItem("fleee", "Flee").SetValue(true));
+            Config.SubMenu("SpellSetting").SubMenu("esetting").AddItem(new MenuItem("antie", "AntiGapcloser").SetValue(true));
+
+            Config.SubMenu("SpellSetting").AddSubMenu(new Menu("------ R Setting" , "rsetting").SetFontStyle(FontStyle.Regular, SharpDX.Color.YellowGreen));
+            Config.SubMenu("SpellSetting").SubMenu("rsetting").AddItem(new MenuItem("大招人数", "Box Count").SetValue(new Slider(2, 1, 6)));
+            Config.SubMenu("SpellSetting").SubMenu("rsetting").AddItem(new MenuItem("rsetting", "Count = 6 Disbale").SetFontStyle(FontStyle.Regular, SharpDX.Color.Violet));
+
+            Config.AddSubMenu(new Menu("Draw Setting", "DrawSetting"));
+            Config.SubMenu("DrawSetting").AddItem(new MenuItem("drawenable", "Draw Spell Range").SetValue(true));
+            Config.SubMenu("DrawSetting").AddItem(new MenuItem("drawq", "Draw Q Range").SetValue(true));
+            Config.SubMenu("DrawSetting").AddItem(new MenuItem("drawe", "Draw E Range").SetValue(true));
+
+            Config.AddItem(new MenuItem("逃跑", "Use Q Flee").SetValue(new KeyBind('S', KeyBindType.Press)));
+
+            Config.AddItem(new MenuItem("Credit", "Credit : Asuvril"));
 
 			Config.AddToMainMenu();
         }
 
-		private static void Combo() {
+		private static void Combo()
+        {
 			
 			var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 			if (target==null || !target.IsValid) return;
 			try
 			{
-				if (E.CanCast(target))
+				if (E.CanCast(target) && Config.Item("comboe").GetValue<bool>())
 				{
 					E.CastToReverse(target);
 				}
@@ -283,17 +336,20 @@ namespace 锤石 {
 			{
 				if (!E.IsInRange(target) && Qedtarget != null && Q.Instance.Name == "threshqleap")
 				{
-					if (Qedtarget.IsMinion)
-					{
-						if (E.IsReady())
-						{
-							CastQ();
-						}
-					}
-					else
-					{
-						CastQ();
-					}
+                    if (Config.Item("autoqincombo").GetValue<bool>())
+                    {
+                        if (Qedtarget.IsMinion)
+                        {
+                            if (E.IsReady())
+                            {
+                                CastQ();
+                            }
+                        }
+                        else
+                        {
+                            CastQ();
+                        }
+                    }
 				}
 			}
 			catch (Exception)
@@ -312,10 +368,13 @@ namespace 锤石 {
 				{
 					Console.WriteLine("获取技能盾异常");
 				}
-                if (Q.CanCast(target) && !hasSpellShield && !E.IsInRange(target))
-				{
-					CastQ(target);
-				}
+                if (Config.Item("autoqincombo").GetValue<bool>())
+                {
+                    if (Q.CanCast(target) && !hasSpellShield && !E.IsInRange(target))
+                    {
+                        CastQ(target);
+                    }
+                }
 			}
 			catch (Exception)
 			{
@@ -333,19 +392,24 @@ namespace 锤石 {
 			
         }
 
-		private static void LaneClear() {
-			if (E.IsReady() && Player.Mana > Q.ManaCost+W.ManaCost+E.ManaCost+R.ManaCost)
-			{
-				var minions = MinionManager.GetMinions(Player.ServerPosition, E.Range, MinionTypes.All);
-				var Efarm = Q.GetLineFarmLocation(minions, E.Width);
-				if (Efarm.MinionsHit >= 3)
-				{
-					E.Cast(Efarm.Position);
-				}
-			}
+		private static void LaneClear()
+        {
+            if (Config.Item("lanecleare").GetValue<bool>())
+            {
+                if (E.IsReady() && Player.Mana > Q.ManaCost + W.ManaCost + E.ManaCost + R.ManaCost)
+                {
+                    var minions = MinionManager.GetMinions(Player.ServerPosition, E.Range, MinionTypes.All);
+                    var Efarm = Q.GetLineFarmLocation(minions, E.Width);
+                    if (Efarm.MinionsHit >= 3)
+                    {
+                        E.Cast(Efarm.Position);
+                    }
+                }
+            }
 		}
 
-		private static void LanternCheck() {
+		private static void LanternCheck()
+        {
 			if (!W.IsReady()) return;
 
 			Obj_AI_Hero FurthestAlly = null, AoeAlly = null, PriorityAlly = null;
@@ -380,18 +444,24 @@ namespace 锤石 {
 				{
 					var enemyCount = Player.CountEnemiesInRange(1500);
 					var allyCount = Player.CountAlliesInRange(1500);
-					if (enemyCount >= allyCount + 1 && W.Cast(Prediction.GetPrediction(FurthestAlly, 1f).CastPosition))
+					if (enemyCount >= allyCount + 1)
 					{
-						Console.WriteLine("给最远队友灯笼");
-						return;
+                        if(Config.Item("GiveAllyWToFar").GetValue<bool>() && W.Cast(Prediction.GetPrediction(FurthestAlly, 1f).CastPosition))
+                        {
+                            Console.WriteLine("给最远队友灯笼");
+                            return;
+                        }
 					}
 	
 				}
 			}
-			else if (AoeAlly != null && W.Cast(AoeAlly.Position))
+			else if (AoeAlly != null)
 			{
-				Console.WriteLine("给AOE队友灯笼");
-				return;
+                if(Config.Item("GiveAllyWToAoE").GetValue<bool>() && W.Cast(AoeAlly.Position))
+                {
+                    Console.WriteLine("给AOE队友灯笼");
+                    return;
+                }
 			}
 			//else if(PriorityAlly != null && W.Cast(Prediction.GetPrediction(PriorityAlly, 1f).CastPosition))
 			//{
@@ -402,7 +472,8 @@ namespace 锤石 {
 
 		}
 
-		private static Obj_AI_Hero PriorityLantern() {
+		private static Obj_AI_Hero PriorityLantern()
+        {
 			Obj_AI_Hero PriorityAlly = null;
 			float AllyPriority = 0;
             foreach (var ally in HeroManager.Allies.Where(a => !a.IsDead && Player.Distance(a)<= W.Range && a.CountEnemiesInRange(1000)>0))
@@ -420,7 +491,8 @@ namespace 锤石 {
 			return PriorityAlly;
 		}
 
-		private static Obj_AI_Hero AOELantern() {
+		private static Obj_AI_Hero AOELantern()
+        {
 			Obj_AI_Hero aoeAlly = null;
 			int aoeCount = 0;
 			foreach (var ally in HeroManager.Allies.Where(a => !a.IsDead && Player.Distance(a)<W.Range && a.CountEnemiesInRange(500)>0))
@@ -435,7 +507,8 @@ namespace 锤石 {
 			return aoeAlly;
         }
 
-		private static Obj_AI_Hero GrabFurthestAlly() {
+		private static Obj_AI_Hero GrabFurthestAlly()
+        {
 			Obj_AI_Hero FurthestAlly = null;
 
 			var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
@@ -456,18 +529,20 @@ namespace 锤石 {
 			return FurthestAlly;
         }
 
-		private static void FlayPush() {
+		private static void FlayPush()
+        {
 			
 			foreach (var enemy in HeroManager.Enemies)
 			{
-				if (E.CanCast(enemy) && Player.IsFleeing(enemy) && enemy.IsChaseing(Player))
+				if (E.CanCast(enemy) && Player.IsFleeing(enemy) && enemy.IsChaseing(Player) && Config.Item("fleee").GetValue<bool>())
 				{
 					E.Cast(enemy);
 				}
 			}
 		}
 
-		private static void AutoBox() {
+		private static void AutoBox()
+        {
 			//设置R个数
 			var AutoBoxCount = Config.Item("大招人数").GetValue<Slider>().Value;
             if (R.IsReady()&& Player.CountEnemiesInRangeDeley(R.Range,0.75f)>= AutoBoxCount)
@@ -476,7 +551,8 @@ namespace 锤石 {
 			}
 		}
 
-		private static void JungleEscape() {
+		private static void JungleEscape()
+        {
 
 			foreach (var Camp in Jungle.Camps)
 			{
@@ -511,33 +587,33 @@ namespace 锤石 {
 			}
 		}
 
-		private static void TowerCheck() {
-			var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-			var tower = target.GetMostCloseTower();
-			if (tower.IsAlly)
-			{
-				if (Player.IsInTurret(tower) && tower.Target == null && Q.IsReady() && target.Distance(tower)<Q.Range/2 && GetQName()== QName.ThreshQ)
-				{
-					CastQ(target);
-                }
+        //private static void TowerCheck()
+        //{
+        //    var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+        //    var tower = target.GetMostCloseTower();
+        //    if (tower.IsAlly)
+        //    {
+        //        if (Player.IsInTurret(tower) && tower.Target == null && Q.IsReady() && target.Distance(tower) < Q.Range / 2 && GetQName() == QName.ThreshQ)
+        //        {
+        //            CastQ(target);
+        //        }
 
-				if (!Player.IsInTurret(tower) && tower.Target == null && target.Distance(tower)<E.Range/2 && E.CanCast(target))
-				{
-					if (target.Distance(tower)<Player.Distance(tower))
-					{
-						E.Cast(target);
-					}
-					else
-					{
-						E.CastToReverse(target);
-					}
-				}
-			}
+        //        if (!Player.IsInTurret(tower) && tower.Target == null && target.Distance(tower) < E.Range / 2 && E.CanCast(target))
+        //        {
+        //            if (target.Distance(tower) < Player.Distance(tower))
+        //            {
+        //                E.Cast(target);
+        //            }
+        //            else
+        //            {
+        //                E.CastToReverse(target);
+        //            }
+        //        }
+        //    }
+        //}
 
-
-		}
-
-		private static bool CastQ(Obj_AI_Hero target = null, HitChance hitChance = HitChance.VeryHigh) {
+        private static bool CastQ(Obj_AI_Hero target = null, HitChance hitChance = HitChance.VeryHigh)
+        {
 			if (GetQName()== QName.ThreshQ && target!=null)
 			{
 				var Qpre = Q.GetPrediction(target);
@@ -560,11 +636,15 @@ namespace 锤石 {
 			}
 			return false;
 		}
-		enum QName {
+
+		enum QName
+        {
 			ThreshQ,
 			threshqleap
 		}
-		private static QName GetQName() {
+
+		private static QName GetQName()
+        {
 			if (Q.Instance.Name == "ThreshQ")
 			{
 				return QName.ThreshQ;

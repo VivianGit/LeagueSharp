@@ -1,1 +1,13 @@
 D:\GIT\GitHub\Thresh\Thresh\bin\Release\锤石.exe.config
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\锤石.exe.config
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\锤石.exe
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\锤石.pdb
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\LeagueSharp.Common.dll
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\LeagueSharp.dll
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\SharpDX.dll
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\clipper_library.dll
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\bin\Release\LeagueSharp.Sandbox.dll
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\obj\Debug\Thresh.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\obj\Debug\锤石.exe
+C:\Users\Administrator\Documents\GitHub\LeagueSharp-1\Thresh\Thresh\obj\Debug\锤石.pdb
