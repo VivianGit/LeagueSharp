@@ -209,6 +209,7 @@ namespace 锤石 {
 			catch (Exception ex)
 			{
 				Camps = new List<Camp>();
+                Console.Write(ex);
 				//Global.Logger.AddItem(new LogItem(ex));
 			}
 		}
